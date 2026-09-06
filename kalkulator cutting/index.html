@@ -3,12 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WAROBH Kalkulator Stiker Multi-Bentuk (32x48 cm)</title>
+    <title>Kalkulator Stiker Multi-Bentuk - Percetakan WAROBH</title>
     <style>
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #f1f5f9; padding: 20px; display: flex; justify-content: center; }
         .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); width: 100%; max-width: 500px; }
-        h2 { color: #0f172a; margin-top: 0; font-size: 20px; text-align: center; border-bottom: 2px solid #2563eb; padding-bottom: 10px; }
+        
+        /* Layout Header dengan Logo WAROBH di sebelah kiri */
+        .header-container { display: flex; align-items: center; justify-content: center; border-bottom: 2px solid #2563eb; padding-bottom: 12px; margin-bottom: 15px; gap: 12px; }
+        .logo-box { width: 45px; height: 45px; background: #2563eb; color: white; border-radius: 8px; font-weight: 900; font-size: 22px; display: flex; align-items: center; justify-content: center; letter-spacing: -1px; flex-shrink: 0; box-shadow: 0 2px 6px rgba(37,99,235,0.3); }
+        .header-titles { text-align: left; }
+        h2 { color: #0f172a; margin: 0; font-size: 18px; line-height: 1.2; }
+        .brand-sub { font-size: 11px; color: #64748b; font-weight: 600; letter-spacing: 1px; margin-top: 2px; text-transform: uppercase; }
+        
         .form-group { margin-bottom: 15px; }
         label { display: block; font-weight: 600; margin-bottom: 5px; color: #334155; font-size: 14px; }
         input, select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; }
@@ -27,7 +34,14 @@
 <body>
 
 <div class="card">
-    <h2>Kalkulator Stiker (32 x 48 cm)</h2>
+    <div class="header-container">
+        <!-- Logo Icon WAROBH (Ganti 'src' gambar jika ada file image logo) -->
+        <div class="logo-box">W</div>
+        <div class="header-titles">
+            <h2>Kalkulator Stiker (32x48 cm)</h2>
+            <div class="brand-sub">PERCETAKAN WAROBH</div>
+        </div>
+    </div>
     
     <div class="form-group">
         <label for="bentuk">Bentuk Stiker:</label>
@@ -111,7 +125,7 @@ function toggleBentuk() {
     } else {
         groupBulat.style.display = 'none';
         groupPersegi.style.display = 'flex';
-        groupLayout.style.display = 'none'; // Untuk persegi selalu menggunakan layout grid teroptimasi
+        groupLayout.style.display = 'none';
     }
 }
 
@@ -121,9 +135,8 @@ function hitungStiker() {
     const gap = parseFloat(document.getElementById('gap').value) || 0;
     const targetPcs = parseInt(document.getElementById('targetPcs').value) || 0;
 
-    // Ukuran area cetak efektif (dikurangi margin regmark/crop mark)
-    const W = 30; // cm
-    const H = 45; // cm
+    const W = 30; // area cetak efektif (cm)
+    const H = 45; // area cetak efektif (cm)
 
     let pcsPerLembar = 0;
     let labelUkuran = "";
@@ -133,14 +146,13 @@ function hitungStiker() {
         if (!d || d <= 0) { alert("Masukkan diameter stiker!"); return; }
         
         labelUkuran = `Bulat Dia. ${d} cm`;
-        const effD = d + gap; // Diameter + Jarak antar stiker
+        const effD = d + gap;
 
         if (mode === 'grid') {
             const col = Math.floor((W + gap) / effD);
             const row = Math.floor((H + gap) / effD);
             pcsPerLembar = col * row;
         } else {
-            // Layout Selang-Seling (Interlocking Hexagonal)
             const rowHeight = effD * (Math.sqrt(3) / 2);
             
             // Portrait
@@ -160,7 +172,7 @@ function hitungStiker() {
             pcsPerLembar = Math.max(countP, countL);
         }
 
-    } else { // Bentuk Persegi / Kotak / Custom
+    } else {
         const p = parseFloat(document.getElementById('panjang').value);
         const l = parseFloat(document.getElementById('lebar').value);
         if (!p || !l || p <= 0 || l <= 0) { alert("Masukkan panjang dan lebar stiker!"); return; }
@@ -169,21 +181,17 @@ function hitungStiker() {
         const effP = p + gap;
         const effL = l + gap;
 
-        // Opsi 1: Posisi Standar (Panjang searah Lebar Kertas)
         const col1 = Math.floor((W + gap) / effP);
         const row1 = Math.floor((H + gap) / effL);
         const total1 = col1 * row1;
 
-        // Opsi 2: Posisi Diputar 90 Derajat (Landscape/Rotated)
         const col2 = Math.floor((W + gap) / effL);
         const row2 = Math.floor((H + gap) / effP);
         const total2 = col2 * row2;
 
-        // Ambil hasil tata letak paling efisien (terbanyak)
         pcsPerLembar = Math.max(total1, total2);
     }
 
-    // Hitung Kebutuhan Kertas
     let lembarDibutuhkan = 0;
     let totalDapat = 0;
 
@@ -192,7 +200,6 @@ function hitungStiker() {
         totalDapat = lembarDibutuhkan * pcsPerLembar;
     }
 
-    // Tampilkan Hasil
     document.getElementById('resUkuran').innerText = labelUkuran;
     document.getElementById('resPerLembar').innerText = pcsPerLembar + ' pcs / lembar';
     document.getElementById('resLembarKertas').innerText = targetPcs > 0 ? lembarDibutuhkan + ' Lembar (32x48 cm)' : 'Masukkan total pcs';
